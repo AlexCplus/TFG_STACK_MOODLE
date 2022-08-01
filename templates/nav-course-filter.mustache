@@ -1,0 +1,45 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_stack/nav-course-filter
+
+    This template renders the 
+
+    Example context (json):
+    {}
+}}
+
+<div id="selection-course" class="dropdown">
+    <span id="course-stack-id" hidden="hidden"> -1 </span>
+    <button type="button" class="btn btn-outline-secondary dropdown-toggle icon-no-margin" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="icon fa fa-sort-amount-asc fa-fw " aria-hidden="true"></i>
+        
+        Curso Seleccionado
+    </button>
+    <div class="box py-3 generalbox" id="render-chart">
+        <canvas id="myChart"></canvas>
+        {{{chart}}}
+    </div>
+    <div id="menu-courses" role="menu" class="dropdown-menu" data-show-active-item data-skip-active-class="true">
+        {{#courses}}
+            <a id="course-{{id}}" class="dropdown-item" id="{{id}}">
+                {{name}}
+            </a>
+        {{/courses}}
+    </div>
+</div>
+

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="blocks/stack/db" VERSION="20220302" COMMENT="XMLDB file for Moodle blocks/stack">
+
+<TABLES>
+    <TABLE NAME="block_stack_course" COMMENT="Stores the courses">
+                <FIELDS>
+                    <FIELD NAME="id" TYPE="int" NOTNULL="true" SEQUENCE="true" LENGTH="10"/>
+                    <FIELD NAME="courseid" TYPE="int" NOTNULL="true" LENGTH="10"/>
+                    <FIELD NAME="name" TYPE="text"/>
+                </FIELDS>
+                <KEYS>
+                    <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                </KEYS>
+    </TABLE>
+
+    <TABLE NAME="block_stack_students" COMMENT="Stores the courses">
+                <FIELDS>
+                    <FIELD NAME="id" TYPE="int" NOTNULL="true" SEQUENCE="true" LENGTH="10"/>
+                    <FIELD NAME="studentid" TYPE="int" NOTNULL="true" LENGTH="10"/>
+                    <FIELD NAME="courseid" TYPE="int" NOTNULL="true" LENGTH="10"/>
+                    <FIELD NAME="firstname" TYPE="text"/>
+                    <FIELD NAME="surname" TYPE="text"/>
+                </FIELDS>
+                <KEYS>
+                    <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                </KEYS>
+    </TABLE>
+
+    <TABLE NAME="block_stack_quiz" COMMENT="Stores the questions of an attempt quiz">
+                <FIELDS>
+                    <FIELD NAME="id" TYPE="int" NOTNULL="true" SEQUENCE="true" LENGTH="10"/>
+                    <FIELD NAME="quizid" TYPE="int" NOTNULL="true" LENGTH="10"/>
+                    <FIELD NAME="course" TYPE="int" LENGTH="10" COMMENT="Stores the questions separated by commas" />
+                    <FIELD NAME="name" TYPE="text"/>
+                </FIELDS>
+                <KEYS>
+                    <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+                </KEYS>
+    </TABLE>
+
+    <TABLE NAME="block_stack_quiz_attempt" COMMENT="Stores the questions of an attempt quiz">
+                <FIELDS>
+                    <FIELD NAME="id" TYPE="int" NOTNULL="true" SEQUENCE="true" LENGTH="10"/>
+                    <FIELD NAME="quiz_attempt_id" TYPE="int" LENGTH="10" COMMENT="Store the quesstion id"/>
+                    <FIELD NAME="quiz" TYPE="int" LENGTH="10" COMMENT="Stores the connection between the questions and the attempt"/>
+                    <FIELD NAME="userid" TYPE="int" LENGTH="10" COMMENT="Stores the connection between the questions and the attempt"/>
+                    <FIELD NAME="attempt" TYPE="int" LENGTH="10" COMMENT="Stores the connection between the questions and the attempt"/>
+                    <FIELD NAME="uniqueid" TYPE="int" LENGTH="10" COMMENT="Stores the connection between the questions and the attempt"/>
+                    <FIELD NAME="mark" TYPE="number" LENGTH="12" DECIMALS="7" COMMENT="Stores the connection between the questions and the attempt"/>
+                    <FIELD NAME="maxgrade" TYPE="number" LENGTH="12" DECIMALS="7" COMMENT="Stores the connection between the questions and the attempt"/>
+                    <FIELD NAME="pf" TYPE="int" DEFAULT="0" LENGTH="1"/>
+                </FIELDS>
+                <KEYS>
+                    <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+                </KEYS>
+    </TABLE>
+
+    <TABLE NAME="block_stack_question" COMMENT="Stores the questions of an attempt quiz">
+                <FIELDS>
+                    <FIELD NAME="id" TYPE="int" NOTNULL="true" SEQUENCE="true" LENGTH="10"/>
+                    <FIELD NAME="questionid" TYPE="int" NOTNULL="true" LENGTH="10"/>
+                    <FIELD NAME="category" TYPE="int" LENGTH="10" COMMENT="Stores the connection between the questions and the attempt"/>
+                    <FIELD NAME="name" TYPE="text" COMMENT="Stores the connection between the questions and the attempt"/>
+                    <FIELD NAME="uniqueid" TYPE="int" LENGTH="10" COMMENT="Stores the connection between the questions and the attempt"/>
+                    <FIELD NAME="slot" TYPE="int" LENGTH="10" COMMENT="Stores the connection between the questions and the attempt"/>
+                    <FIELD NAME="mark" TYPE="number" LENGTH="12" DECIMALS="7" COMMENT="Stores the connection between the questions and the attempt"/>
+                    <FIELD NAME="maxgrade" TYPE="number" LENGTH="12" DECIMALS="7" COMMENT="Stores the connection between the questions and the attempt"/>
+                    <FIELD NAME="pf" TYPE="int" LENGTH="1"/>
+                    <FIELD NAME="nodes" TYPE="text"/>
+                    <FIELD NAME="response" TYPE="text"/>
+                    <FIELD NAME="error" TYPE="text"/>
+                    <FIELD NAME="graph" TYPE="text"/>
+                </FIELDS>
+                <KEYS>
+                    <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+                </KEYS>
+    </TABLE>
+</TABLES>
+
+</XMLDB>
