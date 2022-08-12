@@ -24,6 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/blocks/stack/classes/statistics.php');
+require_once($CFG->dirroot . '/blocks/stack/classes/output/student/main_student.php');
 
 class block_stack extends block_base {
 
@@ -36,7 +37,10 @@ class block_stack extends block_base {
     }
 
     public function get_content() {
-        global $DB, $PAGE;
+        global $DB, $PAGE, $USER;
+
+        $role_teacher = 0;
+        $role_student = 0;
 
         if ($this->content !== null) {
             return $this->content;
@@ -45,35 +49,68 @@ class block_stack extends block_base {
             $this->content->text = $this->config->text;
         }
         $courses = $DB->get_records('course');
+        $display_courses = array();
 
         // Filtrar el curso por si existen preguntas de Stack en alguno de los cuestionarios.
         foreach ($courses as $course) {
             if ($course != null && $course->format != "site") {
                 $stackinfo = new block_stack_course($course->id, $course->shortname);
                 $stackinfo->block_stack_course_get_quizzes();
+                
                 $stackinfo->block_stack_course_get_students();
+                
                 $stackinfo->block_stack_course_field_quiz_attempts();
+                
                 $stackinfo->block_stack_course_filed_questions();
+                
                 $stackinfo->block_stack_course_store_info_db();
+            
+                $context = context_course::instance($course->id);
+                $roleassignments = $DB->get_records('role_assignments', ['userid' => $USER->id, 'contextid' => $context->id]);
+
+                foreach ($roleassignments as $roles) {
+                    $roles_per_course = $DB->get_records('role', ['id' => $roles->roleid]);
+                    foreach ($roles_per_course as $rpc) {
+                        $courserole_per_user = new stdClass();
+                        $courserole_per_user->id = $course->id;
+                        $courserole_per_user->shortname = $course->shortname;
+                        $courserole_per_user->role_name = $rpc->shortname;
+
+                        if ($courserole_per_user->role_name === 'teacher' || 
+                            $courserole_per_user->role_name === 'editingteacher') {
+                                $role_teacher++;
+                        } else {
+                                $role_student++;
+                        }
+
+                        array_push($display_courses, $courserole_per_user);   
+                    }
+                }
             }
         }
 
-        $PAGE->requires->js_call_amd('block_stack/main','init');
+        if ($role_teacher > 0) {
+            // Muestro la sección de profesores
+            $PAGE->requires->js_call_amd('block_stack/main','init');
 
-        $this->content = new stdClass;
+            $this->content = new stdClass;
 
-        $renderable = new \block_stack\output\main($courses);
-        $renderer = $this->page->get_renderer('block_stack');
+            $renderable = new \block_stack\output\main($display_courses);
+            $renderer = $this->page->get_renderer('block_stack');
 
-        $this->content = (object) [
-            'text' => $renderer->render($renderable),
-        ];
+            $this->content = (object) [
+                'text' => $renderer->render($renderable),
+            ];
 
-        $url = new moodle_url("../blocks/stack/render_statistics.php");
-        $this->content->footer = html_writer::div(
-            html_writer::link($url, "Ver más"),
-            'block_stack'
-        );
+            $url = new moodle_url("../blocks/stack/render_statistics.php");
+            $this->content->footer = html_writer::div(
+                html_writer::link($url, "Ver más"),
+                'block_stack'
+            );
+        }else {
+            // Muestro la sección de alumnos
+            //$renderable = new \block_stack\output\main_student;
+        }
 
         return $this->content;
     }

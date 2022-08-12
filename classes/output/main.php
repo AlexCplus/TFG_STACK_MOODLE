@@ -59,15 +59,6 @@ class main implements renderable, templatable {
     }
 
     /**
-     * Test the available filters with the current user preference and return an array with
-     * bool flags corresponding to which is active
-     *
-     * @return array
-     */
-    protected function get_filters_as_booleans() {
-    }
-
-    /**
      * Get the offset/limit values corresponding to $this->filter
      * which are used to send through to the context as default values
      *

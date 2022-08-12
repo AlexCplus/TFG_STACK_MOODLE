@@ -45,7 +45,7 @@ class renderer extends plugin_renderer_base {
     public function render_main(main $main) {
         return $this->render_from_template('block_stack/main', $main->export_for_template($this));
     }
-    public function render_main_chart(main_chart $main) {
-        return $this->render_from_template('block_stack/main_chart', $main->export_for_template($this));
+    public function render_main_student(main_student $main) {
+        return $this->render_from_template('block_stack/main_student', $main->export_for_template($this));
     }
 }
