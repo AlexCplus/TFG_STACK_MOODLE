@@ -64,5 +64,15 @@ $functions = array(
             'ajax' => true,
             'capabilities' => '',
             'services' => [MOODLE_OFFICIAL_MOBILE_SERVICE, 'local_mobile']
+        ],
+        'block_stack_get_chart_db_student' => [
+            'classname' => 'block_stack_external',
+            'methodname' => 'get_student_chart',
+            'classpath' => '',
+            'description' => 'Get the graph student',
+            'type' => 'read',
+            'ajax' => true,
+            'capabilities' => '',
+            'services' => [MOODLE_OFFICIAL_MOBILE_SERVICE, 'local_mobile']
         ]
 );

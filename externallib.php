@@ -270,8 +270,40 @@ class block_stack_external extends external_api {
         );
     }
 
-    public static function get_graph_question() {
+    public static function get_student_chart() {
 
+    }
+
+    public static function get_student_chart_parameters() {
+        return new external_function_parameters(
+            // a external_description can be: external_value, external_single_structure or external_multiple structure
+            array('id_course' => new external_value(PARAM_INT, 'id_course for change to the chart student.')) 
+        );
+    }
+
+    public static function get_student_chart_returns() {
+
+    }
+
+    public static function get_graph_question($id_course) {
+        global $DB, $USER;
+        $params = self::validate_parameters(self::get_student_chart_parameters(),
+                array('id_course' => $id_course));
+        $sql = 'SELECT * FROM {block_stack_quiz} WHERE course = ?';
+        $passed = 0;
+        $not_passed = 0;
+        $quizs =  $DB->get_records_sql($sql, array($id_course));
+        foreach ($quizs as $element) {
+            $sql = 'SELECT * FROM {block_stack_quiz_attempt} WHERE quiz = ? AND userid = ?';
+            $attempts = $DB->get_records_sql($sql, array($element->quizid, $USER->id));
+            foreach ($attempts as $attempt) {
+                if ($attempt->pf == 0) {
+                    $not_passed++;
+                }else {
+                    $passed++;
+                }
+            }
+        }
     }
 
     public static function get_graph_question_parameters() {

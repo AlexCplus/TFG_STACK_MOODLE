@@ -2,6 +2,7 @@ define(['jquery', 'jqueryui', 'block_stack/main'], function () {
 
         return {
             init: function () {
+                window.console.log('teacher');
                 var children = document.querySelectorAll("#menu-courses");
 
                 for (let i = 0; i < children.length; i++) {
@@ -18,7 +19,10 @@ define(['jquery', 'jqueryui', 'block_stack/main'], function () {
                             
                             promise.done(function(response) {
                                 require(['core/chartjs'], function() {
-                                    const ctx = document.getElementById('myChart').getContext('2d');
+                                    const cv = document.createElement('canvas');
+                                    cv.setAttribute('id', 'myChart');
+                                    document.querySelector('#render-chart').appendChild(cv);
+                                    const ctx = cv.getContext('2d');
                                     const myChart = new Chart(ctx, {
                                         type: 'doughnut',
                                         data: {
@@ -28,6 +32,57 @@ define(['jquery', 'jqueryui', 'block_stack/main'], function () {
                                               ],
                                             datasets: [{
                                                 label: '% de estudiantes',
+                                                title: 'Total de cuestionarios con más de un intento',
+                                                data: [response["passed"], response["not_passed"]],
+                                                backgroundColor: [
+                                                  'rgb(119, 221, 119)',
+                                                  'rgb(255, 0, 0)'
+                                                ],
+                                                hoverOffset: 4
+                                            }]
+                                        }
+                                    });
+                                });
+                                document.getElementById('course_not_selected').hidden = true;
+                                window.console.log(response);
+                            }).fail(function(ex){
+                                window.console.log(ex);
+                            });
+                        });
+                    });
+                }
+            }, init_student : function() {
+                window.console.log('student');
+                var children = document.querySelectorAll("#menu-courses");
+
+                for (let i = 0; i < children.length; i++) {
+                    children[i].addEventListener("click", function(evt){
+                        var child_id = evt.target.id.split("-");
+                        require(['core/ajax','core/notification'], function(Ajax,Notification) {
+                            window.console.log(Ajax);
+                            var request = {
+                                methodname: 'block_stack_get_chart_db_student',
+                                args : { id_course : child_id[1] }
+                            };
+
+                            var promise = Ajax.call([request])[0];
+                            
+                            promise.done(function(response) {
+                                require(['core/chartjs'], function() {
+                                    const cv = document.createElement('canvas');
+                                    cv.setAttribute('id', 'myChart');
+                                    document.querySelector('#render-chart').appendChild(cv);
+                                    const ctx = cv.getContext('2d');
+                                    const myChart = new Chart(ctx, {
+                                        type: 'doughnut',
+                                        data: {
+                                            labels: [
+                                                'Superados',
+                                                'No Superados',
+                                              ],
+                                            datasets: [{
+                                                label: '% de estudiantes',
+                                                title: 'Total de cuestionarios con más de un intento',
                                                 data: [response["passed"], response["not_passed"]],
                                                 backgroundColor: [
                                                   'rgb(119, 221, 119)',

@@ -33,11 +33,26 @@ use moodle_url;
 
 class main_student implements renderable, templatable {
 
-    public function __construct(){
+    private $courses;
 
+    public function __construct($display_courses){
+        $this->courses = $display_courses;
     }
 
     public function export_for_template(renderer_base $output) {
-        return 0;
+        $studentcourses = array();
+
+        foreach ($this->courses as $c) {
+            if ($c->role_name === 'student') {
+                array_push($studentcourses, $c);
+            }
+        } 
+
+        $content = (object) [
+            'courses' => $studentcourses,
+            'selection'   => '<p id="course_not_selected">Todavía no hay seleccionado ningún curso</p>'
+        ];
+
+        return $content;
     }
 }

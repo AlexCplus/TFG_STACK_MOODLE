@@ -82,7 +82,6 @@ class block_stack extends block_base {
                         } else {
                                 $role_student++;
                         }
-
                         array_push($display_courses, $courserole_per_user);   
                     }
                 }
@@ -108,8 +107,14 @@ class block_stack extends block_base {
                 'block_stack'
             );
         }else {
+            $PAGE->requires->js_call_amd('block_stack/main','init_student');
             // Muestro la sección de alumnos
-            //$renderable = new \block_stack\output\main_student;
+            $renderable = new \block_stack\output\main_student($display_courses);
+            $renderer = $this->page->get_renderer('block_stack');
+
+            $this->content = (object) [
+                'text' => $renderer->render($renderable),
+            ];
         }
 
         return $this->content;

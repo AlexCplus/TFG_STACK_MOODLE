@@ -32,7 +32,8 @@ echo $OUTPUT->header();
 
 if(isset($SESSION->course)) {
     // Gráfica: Personas que han superado en su totalidad el curso habiendo superado los quiz
-    $course_name  = null;
+    $sql = 'SELECT * FROM {block_stack_course} WHERE courseid = ?';
+    $course_name  = $DB->get_record_sql($sql, array($SESSION->course))->name;
     $sql = 'SELECT * FROM {block_stack_quiz} WHERE course = ?';
     $passed_f_chart = 0;
     $not_passed_f_chart = 0;
@@ -168,9 +169,9 @@ if(isset($SESSION->course)) {
     }
     $out .= html_writer::end_tag('ul');
     $out .= html_writer::start_tag('div', array('class' => 'table-responsive'));
-    $out .= html_writer::div($OUTPUT->render($chartf, false), 'course-statistics', array('style' => 'position: relative; height:40vh; width:30vw;')); 
-    $out .= html_writer::div($OUTPUT->render($charts, false), 'quiz-statistics', array('style' => 'position: relative; height:40vh; width:40vw; float:right; transform: translate(20px, -200px);')); 
-    $out .= html_writer::div($OUTPUT->render($chartt, false), 'question-statistics', array('style' => 'position: relative; height:40vh; width:30vw;')); 
+    $out .= html_writer::div($OUTPUT->render_chart($chartf, false), 'course-statistics', array('style' => 'position: relative; height:40vh; width:30vw;')); 
+    $out .= html_writer::div($OUTPUT->render_chart($charts, false), 'quiz-statistics', array('style' => 'position: relative; height:40vh; width:40vw; float:right; transform: translate(20px, -200px);')); 
+    $out .= html_writer::div($OUTPUT->render_chart($chartt, false), 'question-statistics', array('style' => 'position: relative; height:40vh; width:30vw;')); 
     $out .= html_writer::start_tag('table', array('class' => 'table'));
     
     // Start the table data columns. 

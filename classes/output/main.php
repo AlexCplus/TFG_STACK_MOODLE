@@ -43,7 +43,7 @@ require_once($CFG->dirroot . '/course/lib.php');
 class main implements renderable, templatable {
 
     /**
-     * @var string The current filter preference
+     * @var
      */
     private $courses;
 
@@ -54,22 +54,8 @@ class main implements renderable, templatable {
      * @param string $filter Constant filter value from ../stack/lib.php
      * @param string $limit Constant limit value from ../stack/lib.php
      */
-    public function __construct($courses) {
-        $this->courses = $courses;
-    }
-
-    /**
-     * Get the offset/limit values corresponding to $this->filter
-     * which are used to send through to the context as default values
-     *
-     * @return array
-     */
-    private function get_chart_statistics_in_template() {
-        $chart = new \core\chart_pie();
-        $chart->set_doughnut(true); // Calling set_doughnut(true) we display the chart as a doughnut.
-        $chart->add_series(new \core\chart_series('My series title', [400, 460, 1120, 540]));
-        $chart->set_labels((['2004', '2005', '2006', '2007']));
-        return $chart;
+    public function __construct($display_courses) {
+        $this->courses = $display_courses;
     }
 
     /**
@@ -79,21 +65,18 @@ class main implements renderable, templatable {
      * @return stdClass
      */
     public function export_for_template(renderer_base $output) {
-        global $CFG;
-        $coursearr = null;
+        $teachercourses = array();
 
         foreach ($this->courses as $c) {
-            $coursearr = (object) [
-                'id' => $c->id,
-                'name' => $c->shortname
-            ];
+            if ($c->role_name === 'teacher' || $c->role_name === 'editingteacher') {
+                array_push($teachercourses, $c);
+            }
         }
-
         //$chart = $this->get_chart_statistics_in_template();
         //$templatechart = $output->render($chart);
-        if ($coursearr != null) {
+        if ($teachercourses != null) {
             $content = (object) [
-                'courses' => $coursearr,
+                'courses' => $teachercourses,
                 //'chart' => $templatechart
                 'chart'   => '<p id="course_not_selected">Todavía no hay seleccionado ningún curso</p>'
             ];
