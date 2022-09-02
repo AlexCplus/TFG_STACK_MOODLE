@@ -270,23 +270,9 @@ class block_stack_external extends external_api {
         );
     }
 
-    public static function get_student_chart() {
-
-    }
-
-    public static function get_student_chart_parameters() {
-        return new external_function_parameters(
-            // a external_description can be: external_value, external_single_structure or external_multiple structure
-            array('id_course' => new external_value(PARAM_INT, 'id_course for change to the chart student.')) 
-        );
-    }
-
-    public static function get_student_chart_returns() {
-
-    }
-
-    public static function get_graph_question($id_course) {
-        global $DB, $USER;
+    public static function get_student_chart($id_course) {
+        global $DB, $USER, $SESSION;
+        $SESSION->course = $id_course;
         $params = self::validate_parameters(self::get_student_chart_parameters(),
                 array('id_course' => $id_course));
         $sql = 'SELECT * FROM {block_stack_quiz} WHERE course = ?';
@@ -304,6 +290,42 @@ class block_stack_external extends external_api {
                 }
             }
         }
+        $new_output = array('id' => $id_course, 'passed' => $passed, 'not_passed' => $not_passed);
+
+        return $new_output;
+    }
+
+    public static function get_student_chart_parameters() {
+        return new external_function_parameters(
+            // a external_description can be: external_value, external_single_structure or external_multiple structure
+            array('id_course' => new external_value(PARAM_INT, 'id_course for change to the chart student.')) 
+        );
+    }
+
+    public static function get_student_chart_returns() {
+        return new external_single_structure(
+            array(
+                'id' => new external_value(PARAM_INT,'The new id changed to the new couse clicked.'),
+                'passed' => new external_value(PARAM_INT,'Number of students that passed the course.'),
+                'not_passed' => new external_value(PARAM_INT,'Number of students that didnt passed the course.')
+            )
+        );
+    }
+
+    public static function exchange_parameters() {
+        
+    }
+
+    public static function exchange_returns() {
+
+    }
+
+    public static function exchange() {
+        
+    }
+
+    public static function get_graph_question() {
+        
     }
 
     public static function get_graph_question_parameters() {

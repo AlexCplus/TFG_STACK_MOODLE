@@ -150,8 +150,8 @@ if(isset($SESSION->course)) {
     $chartt->add_series(new \core\chart_series('Cantidad de alumnos', [$passed_t_chart, $not_passed_t_chart]));
     $chartt->set_labels(['Superados', 'No Superados']);
 
-    $links = array("render_statistics.php","students.php");
-    $links_names = array("Estadísticas","Estudiantes");
+    $links = array("render_statistics.php","students.php", "porcentage.php");
+    $links_names = array("Estadísticas","Estudiantes", "Porcentaje");
     $col_data = array("#", "Cuestionarios", "Preguntas");
     $row_data = array(  
         0 => "Mejores resultados", 1 => array_search(max($results_quizs), $results_quizs), 2 =>  array_search(max($results_question), $results_question), 3 => "-", 
@@ -161,7 +161,7 @@ if(isset($SESSION->course)) {
 
     $out = $OUTPUT->heading('Estadísticas ' . $course_name);
     $out .= html_writer::start_tag('ul', array("class" => "nav nav-tabs", "role" => "tablist", "style" => "float:right;"));
-    for ($i = 0; $i < 2; $i++) {
+    for ($i = 0; $i < count($links_names); $i++) {
         $out .= html_writer::start_tag('li', array("class" => "nav-item"));
         $url = new moodle_url("../../blocks/stack/". $links[$i] );
         $out .= html_writer::link($url, $links_names[$i], array("class" => "nav-link"));

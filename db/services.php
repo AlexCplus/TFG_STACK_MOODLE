@@ -74,5 +74,15 @@ $functions = array(
             'ajax' => true,
             'capabilities' => '',
             'services' => [MOODLE_OFFICIAL_MOBILE_SERVICE, 'local_mobile']
+        ],
+        'block_stack_exchange' => [
+            'classname' => 'block_stack_external',
+            'methodname' => 'exchange',
+            'classpath' => '',
+            'description' => 'Exchange mark for the student',
+            'type' => 'read',
+            'ajax' => true,
+            'capabilities' => '',
+            'services' => [MOODLE_OFFICIAL_MOBILE_SERVICE, 'local_mobile']
         ]
 );

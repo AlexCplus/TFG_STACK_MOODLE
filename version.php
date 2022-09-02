@@ -24,5 +24,5 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version    = 20220302;
+$plugin->version    = 20220828;
 $plugin->component  = 'block_stack';

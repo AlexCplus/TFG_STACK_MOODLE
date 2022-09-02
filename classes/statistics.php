@@ -54,11 +54,11 @@ define('BLOCK_STACK_GET_QUIZ_QUESTIONS',
 define('BLOCK_STACK_GET_STUDENTS_FROM_COURSE',
 
 'SELECT u.id,u.firstname, u.lastname
-    FROM mdl_user u
-    JOIN mdl_role_assignments ra ON u.id = ra.userid
-    JOIN mdl_role r ON ra.roleid = r.id
-    JOIN mdl_context ctx ON ra.contextid = ctx.id AND ctx.contextlevel = 50
-    JOIN mdl_course c ON ctx.instanceid = ?
+    FROM {user} u
+    JOIN {role_assignments} ra ON u.id = ra.userid
+    JOIN {role} r ON ra.roleid = r.id
+    JOIN {context} ctx ON ra.contextid = ctx.id AND ctx.contextlevel = 50
+    JOIN {course} c ON ctx.instanceid = ?
     WHERE r.archetype = ?
     GROUP BY u.id'
 

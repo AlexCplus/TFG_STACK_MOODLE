@@ -115,6 +115,12 @@ class block_stack extends block_base {
             $this->content = (object) [
                 'text' => $renderer->render($renderable),
             ];
+
+            $url = new moodle_url("../blocks/stack/user_student.php");
+            $this->content->footer = html_writer::div(
+                html_writer::link($url, "Ver más"),
+                'block_stack'
+            );
         }
 
         return $this->content;

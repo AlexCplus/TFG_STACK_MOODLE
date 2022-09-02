@@ -376,6 +376,23 @@ define(['jquery', 'jqueryui', 'block_stack/main'], function () {
                         });
                     });
                 });
+            },
+            exchange: function() {
+                const buttexchange = document.querySelector('.btn btn-success');
+                buttexchange.addEventListener('click', function() {
+                    require(['core/ajax', 'core/notification'], function(Ajax, Notification){
+                        const request = {
+                            methodname: 'block_stack_get_questions_shown'
+                        };
+                        const promise = Ajax.call([request])[0];
+                        promise.donde(function(response) {
+                            window.console.log(response);
+                        }).fail(function(error){
+                            window.console.log(error);
+                        });
+                    });
+                });
+                window.console.log(buttexchange);
             }
         };
 });

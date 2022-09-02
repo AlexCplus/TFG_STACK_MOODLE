@@ -34,12 +34,12 @@ $CFG->cachejs = false;
 $PAGE->requires->js_call_amd('block_stack/main','search');
 $PAGE->requires->js_call_amd('block_stack/main','graph');
 
-$links = array("render_statistics.php","students.php");
-$links_names = array("Estadísticas","Estudiantes");
+$links = array("render_statistics.php","students.php", "porcentage.php");
+$links_names = array("Estadísticas","Estudiantes", "Porcentaje");
 
 $output  = html_writer::start_div();
 $output .= html_writer::start_tag('ul', array("class" => "nav nav-tabs", "role" => "tablist", "style" => "float:right;"));
-for ($i = 0; $i < 2; $i++) {
+for ($i = 0; $i < count($links_names); $i++) {
     $output .= html_writer::start_tag('li', array("class" => "nav-item"));
     $url = new moodle_url("../../blocks/stack/". $links[$i] );
     $output .= html_writer::link($url, $links_names[$i], array("class" => "nav-link"));
