@@ -7,8 +7,8 @@
                     <FIELD NAME="id" TYPE="int" NOTNULL="true" SEQUENCE="true" LENGTH="10"/>
                     <FIELD NAME="courseid" TYPE="int" NOTNULL="true" LENGTH="10"/>
                     <FIELD NAME="name" TYPE="text"/>
-                    <FILED NAME="percentage" TYPE="int" NOTNULL="true" LENGTH="3" DEFAULT="50"/> 
-                    <FILED NAME="topgrade" TYPE="int" NOTNULL="true" LENGTH="3" DEFAULT="0"/> 
+                    <FIELD NAME="percentage" TYPE="number" LENGTH="10" NOTNULL="true" DEFAULT="50" SEQUENCE="false" DECIMALS="5"/>
+                    <FIELD NAME="topgrade" TYPE="number" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" DECIMALS="5"/>
                 </FIELDS>
                 <KEYS>
                     <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

@@ -28,6 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__ . '/../../config.php');
 require_once("$CFG->libdir/externallib.php");
+require_once("$CFG->libdir/excellib.class.php");
 
 class block_stack_external extends external_api {
 
@@ -312,16 +313,40 @@ class block_stack_external extends external_api {
         );
     }
 
-    public static function exchange_parameters() {
-        
+    public static function excel_parameters() {
+        return new external_function_parameters(
+            array(
+                'default_parameter' => new external_value(PARAM_INT,'Default id parameter'),
+            )
+        );
     }
 
-    public static function exchange_returns() {
-
+    public static function excel_returns() {
+        return new external_single_structure(
+            array(
+                'default_parameter' => new external_value(PARAM_INT,'Default id parameter'),
+            )
+        );
     }
 
-    public static function exchange() {
-        
+    public static function excel() {
+        global $SESSION, $DB;
+
+        // Sacamos los quiz que estan en ese curso
+        //$coursename = $DB->get_record_sql('SELECT * FROM {block_stack_course} WHERE courseid = ?', array($SESSION->course));
+        //$downloadfilename = clean_filename($coursename->name) . '.xls';
+        //$moodlexcelwbook = new MoodleExcelWorkbook('-');
+        //$sheet = $moodlexcelwbook->add_worksheet();
+        //$sql = 'SELECT * FROM {quiz} WHERE course = ?';
+        //$quizs = $DB->get_records_sql($sql, array($SESSION->course));
+        //if (!empty($quizs)) {
+        //    $sql = 'SELECT * FROM {block_stack_students} WHERE courseid  = ?';
+        //    $students = $DB->get_records_sql($sql, array($SESSION->course));
+        //    $sheet->set_row(count($students), 4);
+        //}
+        //$moodlexcelwbook->send($downloadfilename);
+        //$moodlexcelwbook->close();
+        return array('default_parameter' => 1);
     }
 
     public static function get_graph_question() {

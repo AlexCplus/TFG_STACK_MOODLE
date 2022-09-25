@@ -22,9 +22,14 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use block_mockblock\search\area;
 
+use block_mockblock\search\area;
+use mod_lti\local\ltiservice\response;
+
+define('NO_OUTPUT_BUFFERING', true);
 require_once(__DIR__. '/../../config.php');
+require_once("$CFG->libdir/excellib.class.php");
+require_once(__DIR__. '/classes/statistics.php');
 
 $PAGE->set_url(new moodle_url('/../blocks/stack/porcentage.php'));
 $PAGE->set_context(\context_system::instance());
@@ -33,6 +38,8 @@ $PAGE->set_title('Datos del curso');
 require_login();
 
 echo $OUTPUT->header();
+
+$PAGE->requires->js_call_amd('block_stack/main','excel');
 
 if ($SESSION->course) {
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -48,6 +55,7 @@ if ($SESSION->course) {
 
     $sql = 'SELECT * from {block_stack_course} WHERE courseid = ?';
     $result = $DB->get_record_sql($sql, array($SESSION->course));
+    $coursename = $result->name;
 
     $output = $OUTPUT->heading('Porcentaje del curso ' . $result->name);
 
@@ -74,25 +82,33 @@ if ($SESSION->course) {
     $output .= html_writer::end_tag('form');
     $output .= html_writer::end_div();
 
-    $output .= html_writer::start_div('p-2', array("style" => "background-color: bisque; margin: 20px; padding: 20px; border-radius: 10px; width:15em;"));
+    $output .= html_writer::start_div('p-2', array("style" => "background-color: bisque; margin: 20px; padding: 20px; border-radius: 10px; width:20em; height:15em;"));
+    $output .= html_writer::start_div('actual-po    rcentage', array("style" => "margin-top:3em; width: 100%; max-width: 400px; display: flex; flex-direction: column; justify-content: center; align-items: center;"));
+    $output .= html_writer::tag('label', 'Porcentaje de alumnos que han canjeado sus puntos', array("for" => "input", "style" => "font-weight:bold; font-size:large; text-align:center;"));
+    $output .= html_writer::end_div();
+    $output .= html_writer::start_div('', array('style' => 'text-align: center; margin: 1em;'));
+    $output .= html_writer::tag('button', 'Descargar Excel', array('class' => 'btn btn-success', 'id' => 'exchange'));
+    $output .= html_writer::end_div();
+
+    $output .= html_writer::end_div();
+
+    $output .= html_writer::start_div('p-2', array("style" => "background-color: bisque; margin: 20px; padding: 20px; border-radius: 10px; width:20em;"));
     $output .= html_writer::start_div('actual-porcentage', array("style" => "margin-top:2em; width: 100%; max-width: 400px; display: flex; flex-direction: column; justify-content: center; align-items: center;"));
-    $output .= html_writer::tag('label', 'Porcentaje', array("for" => "input", "style" => "font-weight:bold; font-size:large;"));
+    $output .= html_writer::tag('label', 'Porcentaje del curso', array("for" => "input", "style" => "font-weight:bold; font-size:large;"));
     $output .= html_writer::start_div('', array("style" => "position: relative; margin: 0 auto; padding: 1.5em; width: 120px; height: 120px; border-radius: 50%; border: 5px solid #e84d51;"));
-    $output .= html_writer::tag('h4', $result->percentage . '%', array("style" => "padding-top: 0.5em; font-size: 28px; text-align: center; font-weight:bold;"));    
+    $output .= html_writer::tag('h4', round($result->percentage, 2) . '%', array("style" => "padding-top: 0.5em; font-size: 28px; text-align: center; font-weight:bold;"));    
     $output .= html_writer::end_div();
     $output .= html_writer::end_div();
     $output .= html_writer::start_div('actual-puntuacion', array("style" => "margin-top:2em; width: 100%; max-width: 400px; display: flex; flex-direction: column; justify-content: center; align-items: center;"));
-    $output .= html_writer::tag('label', 'Puntuación', array("for" => "input", "style" => "font-weight:bold; font-size:large;"));
+    $output .= html_writer::tag('label', 'Puntuación del curso', array("for" => "input", "style" => "font-weight:bold; font-size:large;"));
     $output .= html_writer::start_div('', array("style" => "position: relative; margin: 0 auto; padding: 1.5em; width: 120px; height: 120px; border-radius: 50%; border: 5px solid #e84d51;"));
-    $output .= html_writer::tag('h4', $result->percentage, array("style" => "padding-top: 0.5em; font-size: 28px; text-align: center; font-weight:bold;"));    
+    $output .= html_writer::tag('h4', round($result->topgrade, 2), array("style" => "padding-top: 0.5em; font-size: 28px; text-align: center; font-weight:bold;"));    
     $output .= html_writer::end_div();
     $output .= html_writer::end_div();
     $output .= html_writer::end_div();
-
-    $output .= html_writer::end_div();
-
 
     echo $output;
+
 }
 
 echo $OUTPUT->footer();

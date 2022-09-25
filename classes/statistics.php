@@ -433,52 +433,58 @@ class block_stack_course extends qtype_stack_question {
 
     public function block_stack_course_filed_questions() {
         global $DB, $SESSION;
-
-        foreach($this->quiz as $quiz) {
-            foreach($quiz->get_quiz_attempts() as $attempt) {
-                $questions_from_attempt = $DB->get_records_sql(BLOCK_STACK_GET_QUIZ_QUESTIONS, array($quiz->get_quiz_id(), $attempt->get_quiz_attempt_id()));
-                $qubaid = $attempt->get_quiz_attempt_uniqueid();
-                $records = $DB->get_recordset_sql(BLOCK_STACK_GET_STACK_QUESTIONS, array("qubaid" => $qubaid));
-                if (!$records->valid()) {
-                    throw new coding_exception('Failed to load questions_usage_by_activity ' . $qubaid);
-                }
-                $quba = question_usage_by_activity::load_from_records($records, $qubaid);
-                for ($i = 0; $i < $quba->question_count(); $i++) {
-                    $qa = $quba->get_question_attempt($quba->get_slots()[$i]);
-                    $cmid = $DB->get_record_sql(BLOCK_STACK_GET_CMID, array($this->courseid, $quiz->get_quiz_id()));
-                    $attemptobj = quiz_create_attempt_handling_errors($attempt->get_quiz_attempt_id(), $cmid);
-                    $options = $attemptobj->get_display_options(true);
-                    $markq = $qa->format_mark($options->markdp);
-                    $maxq = $qa->format_max_mark($options->markdp);
-                    $passed_or_failed =  false;
-                    if((float)$markq > ((float)$maxq / 2)) {
-                        $passed_or_failed = true;
-                    }
-                    $nodes = $this->block_stack_statistics_store_nodes_results_db($quba, $i);
-                    
-                    $error = array();
-                    foreach($nodes as $feedbackerror) {
-                        foreach($feedbackerror[0]->_feedback as $f) {
-                            array_push($error, $f->feedback);
+        try{
+            foreach($this->quiz as $quiz) {
+                foreach($quiz->get_quiz_attempts() as $attempt) {
+                    $questions_from_attempt = $DB->get_records_sql(BLOCK_STACK_GET_QUIZ_QUESTIONS, array($quiz->get_quiz_id(), $attempt->get_quiz_attempt_id()));
+                    if (!empty($questions_from_attempt)) {
+                        $qubaid = $attempt->get_quiz_attempt_uniqueid();
+                        $records = $DB->get_recordset_sql(BLOCK_STACK_GET_STACK_QUESTIONS, array("qubaid" => $qubaid));
+                        if (!$records->valid()) {
+                            throw new coding_exception('Failed to load questions_usage_by_activity ' . $qubaid);
                         }
+                        $quba = question_usage_by_activity::load_from_records($records, $qubaid);
+                        for ($i = 0; $i < $quba->question_count(); $i++) {
+                            $qa = $quba->get_question_attempt($quba->get_slots()[$i]);
+                            $cm = get_coursemodule_from_instance("quiz", $quiz->get_quiz_id(), $this->courseid);
+                            $cmid = $cm->id;
+                            $attemptobj = quiz_create_attempt_handling_errors($attempt->get_quiz_attempt_id(), $cmid);
+                            $options = $attemptobj->get_display_options(true);
+                            $markq = $qa->format_mark($options->markdp);
+                            $maxq = $qa->format_max_mark($options->markdp);
+                            $passed_or_failed =  false;
+                            if((float)$markq > ((float)$maxq / 2)) {
+                                $passed_or_failed = true;
+                            }
+                            $nodes = $this->block_stack_statistics_store_nodes_results_db($quba, $i);
+
+                            $error = array();
+                            foreach($nodes as $feedbackerror) {
+                                foreach($feedbackerror[0]->_feedback as $f) {
+                                    array_push($error, $f->feedback);
+                                }
+                            }
+
+                            $graph = array();
+                            foreach($nodes as $abstract_graph) {
+                                $newgraph = stack_abstract_graph_svg_renderer::render($abstract_graph[1], $attempt->get_quiz_attempt_id());
+                                array_push($graph, $newgraph);
+                            } 
+
+                            $newquestion = new block_stack_questions(current($questions_from_attempt)->id, current($questions_from_attempt)->category, current($questions_from_attempt)->name,
+                            current($questions_from_attempt)->slot, $attempt->get_quiz_attempt_userid(), (float)$markq, (float)$maxq , $passed_or_failed,
+                                $nodes, $SESSION->response, $error, $graph
+                            );
+                            next($questions_from_attempt);
+                            // Creamos el grafo 
+
+                            $attempt->set_questions($newquestion);
+                        }   
                     }
-
-                    $graph = array();
-                    foreach($nodes as $abstract_graph) {
-                        $newgraph = stack_abstract_graph_svg_renderer::render($abstract_graph[1], $attempt->get_quiz_attempt_id());
-                        array_push($graph, $newgraph);
-                    } 
-                    
-                    $newquestion = new block_stack_questions(current($questions_from_attempt)->id, current($questions_from_attempt)->category, current($questions_from_attempt)->name,
-                    current($questions_from_attempt)->slot, $attempt->get_quiz_attempt_userid(), (float)$markq, (float)$maxq , $passed_or_failed,
-                        $nodes, $SESSION->response, $error, $graph
-                    );
-                    next($questions_from_attempt);
-                    // Creamos el grafo 
-
-                    $attempt->set_questions($newquestion);
                 }
             }
+        }catch(Exception $e) {
+            return;
         }
     }
 
@@ -516,11 +522,13 @@ class block_stack_course extends qtype_stack_question {
                 // behaviour or adaptivemulipart does not show feedback if the input
                 // is invalid, but we want to show the CAS errors from the PRT.
                 $result = $this->get_block_prt_result($question, $index, $response, $qa->get_state()->is_finished());
-                $feedback = html_writer::nonempty_tag('span', $result[0]->errors,
+                if (is_array($result)) {
+                    $feedback = html_writer::nonempty_tag('span', $result[0]->errors,
                         array('class' => 'stackprtfeedback stackprtfeedback-' . $name));
-                $questiontext = str_replace("[[feedback:{$index}]]", $feedback, $questiontext);
-                
-                array_push($nodes, $result);
+                    $questiontext = str_replace("[[feedback:{$index}]]", $feedback, $questiontext);
+                    
+                    array_push($nodes, $result);
+                }
             }
         }
         return $nodes;
@@ -566,8 +574,8 @@ class block_stack_course extends qtype_stack_question {
     }
 
     public function block_stack_course_store_info_db() {
-        $course = new stdClass();
         global $DB;
+        $course = new stdClass();
 
         $course->courseid = $this->courseid;
         $course->name = $this->coursename;

@@ -75,11 +75,11 @@ $functions = array(
             'capabilities' => '',
             'services' => [MOODLE_OFFICIAL_MOBILE_SERVICE, 'local_mobile']
         ],
-        'block_stack_exchange' => [
+        'block_stack_excel' => [
             'classname' => 'block_stack_external',
-            'methodname' => 'exchange',
+            'methodname' => 'excel',
             'classpath' => '',
-            'description' => 'Exchange mark for the student',
+            'description' => 'Download excel to teacher feedback course',
             'type' => 'read',
             'ajax' => true,
             'capabilities' => '',

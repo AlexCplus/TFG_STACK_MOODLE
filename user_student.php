@@ -31,7 +31,6 @@ $PAGE->set_title('Reporte estadísticas');
 echo $OUTPUT->header();
 
 if (isset($SESSION->course)) {
-    $PAGE->requires->js_call_amd('block_stack/main','exchange');
     $sql = 'SELECT * FROM {block_stack_quiz} WHERE course = ?';
     $passed = 0;
     $not_passed = 0;
@@ -73,11 +72,6 @@ if (isset($SESSION->course)) {
 
     $sql = 'SELECT * FROM {block_stack_course} WHERE courseid = ?';
     $consult = $DB->get_records_sql($sql, array($SESSION->course));
-    if (isset($consult) && $student_score >= (current($consult)->percentage * $max_score / 100)) {
-        $outpt .= html_writer::tag('button', 'Canjear', array("style" => "float:right; border-radius:5px;", "class" => "btn btn-success"));
-    }else{
-        $outpt .= html_writer::tag('button disabled', 'Canjear', array("style" => "float:right; border-radius:5px;", "class" => "btn btn-success"));
-    }
     $outpt .= html_writer::end_div();
 
     $CFG->chart_colorset = ['#77dd77', '#ff0000', '#9b9b9b'];

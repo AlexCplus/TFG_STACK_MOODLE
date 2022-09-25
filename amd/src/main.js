@@ -145,6 +145,20 @@ define(['jquery', 'jqueryui', 'block_stack/main'], function () {
                 });
             },
             graph: function() {
+                var mathjax = document.createElement('script');
+                mathjax.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+                mathjax.id = 	'MathJax-script';
+                mathjax.async = true;
+                document.getElementsByTagName("head")[0].appendChild(mathjax);
+                window.MathJax = {
+                tex: {
+                    inlineMath: [['$', '$'], ['\\(', '\\)']]
+                },
+                svg: {
+                    fontCache: 'global'
+                }
+                };
+
                 //const selection = document.querySelector('.custom-select').selectedOptions[0].value;
                 const selection = document.querySelector('.custom-select');
                 selection.addEventListener('change', function(evt) {
@@ -333,8 +347,7 @@ define(['jquery', 'jqueryui', 'block_stack/main'], function () {
                                                 const fillgraph = document.querySelectorAll('.stack_abstract_graph');
                                                 const evaluation = JSON.parse(q['nodes']);
                                                 const errors = JSON.parse(q['error']);
-                                                
-    
+
                                                 var it = 0;
                                                 fillgraph.forEach(function(tag){
                                                     window.console.log(tag);
@@ -363,7 +376,12 @@ define(['jquery', 'jqueryui', 'block_stack/main'], function () {
                                                     dv.style.justifySelf = 'center';
                                                     dv.style.textAlign = 'center';
                                                     dv.innerHTML += errors[it];
-                                                    //dv.appendChild(errors[it]);
+                                                    window.MathJax.typesetPromise([dv]).then(() => {
+                                                        // the new content is has been typeset
+                                                        window.MathJax.startup.document.state(0);
+                                                        window.MathJax.texReset();
+                                                        window.MathJax.typeset();
+                                                      });
                                                     it++;
                                                 });
                                             }
@@ -377,16 +395,20 @@ define(['jquery', 'jqueryui', 'block_stack/main'], function () {
                     });
                 });
             },
-            exchange: function() {
-                const buttexchange = document.querySelector('.btn btn-success');
+            excel: function() {
+                const buttexchange = document.querySelector('#exchange');
                 buttexchange.addEventListener('click', function() {
                     require(['core/ajax', 'core/notification'], function(Ajax, Notification){
                         const request = {
-                            methodname: 'block_stack_get_questions_shown'
+                            methodname: 'block_stack_excel',
+                            args : { default_parameter :  1 }
                         };
                         const promise = Ajax.call([request])[0];
-                        promise.donde(function(response) {
+                        promise.done(function(response) {
                             window.console.log(response);
+                            require(['https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'], function(excel) {
+                                window.console.log(excel);
+                            });
                         }).fail(function(error){
                             window.console.log(error);
                         });
