@@ -31,13 +31,19 @@ require_once(__DIR__. '/../../config.php');
 require_once("$CFG->libdir/excellib.class.php");
 require_once(__DIR__. '/classes/statistics.php');
 
+$CFG->cachejs = false;
+
 $PAGE->set_url(new moodle_url('/../blocks/stack/porcentage.php'));
 $PAGE->set_context(\context_system::instance());
 $PAGE->set_title('Datos del curso');
 
 require_login();
 
+$PAGE->requires->js( new moodle_url('http://code.jquery.com/jquery-3.2.1.min.js') , true);
+$PAGE->requires->js( new moodle_url('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'), true);
+
 echo $OUTPUT->header();
+    
 
 $PAGE->requires->js_call_amd('block_stack/main','excel');
 
