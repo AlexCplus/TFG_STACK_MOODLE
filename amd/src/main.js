@@ -404,29 +404,61 @@ define(['jquery', 'jqueryui', 'block_stack/main'], function () {
                     };
                     const promise = Ajax.call([request])[0];
                     promise.done(function(response) {
+                        window.console.log(response);
                         try {
+                            var data = [];
+                            for (let i = 0; i < response.length; i++) {
+                                let line = [response[i]['name']];
+                                for (let j = 0; j < response[0]['quiz'].length; j++) {
+                                    if (response[i]['quiz'][j] != null) {
+                                        if (i == 0) {
+                                            line.push(response[i]['quiz'][j]['quiz_name']);
+                                        }else {
+                                            line.push(parseInt(response[i]['quiz'][j]['mark']).toFixed(2));
+                                        }
+                                    }else {
+                                        line.push('No calificado');
+                                    }
+                                }
+                                if (i != 0) {
+                                    line.push(response[i]['punctuation']);
+                                }else {
+                                    line.push('Puntuación');
+                                }
+                                data.push(line);
+                            }
+                            
+                            window.console.log(data);
                             var workbook = window.XLSX.utils.book_new(),
                                 worksheet = window.XLSX.utils.aoa_to_sheet(data);
-                            workbook.SheetNames.push("First");
-                            workbook.Sheets["First"] = worksheet;
-                            // (C3) TO BINARY STRING
+                            workbook.SheetNames.push(response[0]['name']);
+                            workbook.Sheets[response[0]['name']] = worksheet;
+                            window.console.log(workbook.Sheets[response[0]['name']]);
+                            workbook.Sheets[response[0]['name']]['!cols'] = [{ wpx : 150 },{ wpx : 200 }];
+                            window.console.log('Length' + data.length*data[0].length);
+                            workbook.Sheets[response[0]['name']]["A1"].s = {
+                                fill: {
+                                  patternType: "solid",
+                                  fgColor: { rgb: "111111" }
+                                }
+                            };
+
+                            window.console.log(workbook.Sheets[response[0]['name']]);
                             var xlsbin = window.XLSX.write(workbook, {
                             bookType: "xlsx",
                             type: "binary"
                             });
                             
-                            // (C4) TO BLOB OBJECT
                             var buffer = new ArrayBuffer(xlsbin.length),
                                 array = new Uint8Array(buffer);
                             for (var i=0; i<xlsbin.length; i++) {
                             array[i] = xlsbin.charCodeAt(i) & 0XFF;
                             }
                             var xlsblob = new Blob([buffer], {type:"application/octet-stream"});
-                            // (C5) "FORCE DOWNLOAD"
                             var url = window.URL.createObjectURL(xlsblob),
                                 anchor = document.createElement("a");
                             anchor.href = url;
-                            anchor.download = "demo.xlsx";
+                            anchor.download = response[0]['name'] + '.xlsx';
                             anchor.click();
                             window.URL.revokeObjectURL(url);
                         }catch(err) {
