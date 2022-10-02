@@ -39,8 +39,9 @@ $PAGE->set_title('Datos del curso');
 
 require_login();
 
-$PAGE->requires->js( new moodle_url('http://code.jquery.com/jquery-3.2.1.min.js') , true);
-$PAGE->requires->js( new moodle_url('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'), true);
+//$PAGE->requires->js( new moodle_url('http://code.jquery.com/jquery-3.2.1.min.js') , true);
+//$PAGE->requires->js( new moodle_url('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.15.6/xlsx.core.min.js'), true);
+$PAGE->requires->js( new moodle_url($CFG->wwwroot . '/blocks/stack/js/xlsx.js'), true);
 
 echo $OUTPUT->header();
     

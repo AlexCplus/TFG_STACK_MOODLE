@@ -432,16 +432,89 @@ define(['jquery', 'jqueryui', 'block_stack/main'], function () {
                             var workbook = window.XLSX.utils.book_new(),
                                 worksheet = window.XLSX.utils.aoa_to_sheet(data);
                             workbook.SheetNames.push(response[0]['name']);
+                            const DEF_ColW = 30;
+			                const DEF_RowH = 25;
+                            worksheet['!cols'] = [];
+                            worksheet['!rows'] = [];
+                            for (let i = 0; i < (data.length + data[0].length); i++) {
+                                worksheet['!cols'].push({ width: DEF_ColW}); 
+                                worksheet['!rows'].push({ 'hpt': DEF_RowH });                   
+                            }
                             workbook.Sheets[response[0]['name']] = worksheet;
                             window.console.log(workbook.Sheets[response[0]['name']]);
-                            workbook.Sheets[response[0]['name']]['!cols'] = [{ wpx : 150 },{ wpx : 200 }];
                             window.console.log('Length' + data.length*data[0].length);
-                            workbook.Sheets[response[0]['name']]["A1"].s = {
-                                fill: {
-                                  patternType: "solid",
-                                  fgColor: { rgb: "111111" }
+                            
+                            var range = XLSX.utils.decode_range(worksheet['!ref']);
+                            for (let rowNum = range.s.c; rowNum <= range.e.c; rowNum++) {
+                                const cells = worksheet[XLSX.utils.encode_cell({r: 0, c: rowNum})];
+                                cells['!cols'] = [{ wpx : 150 },{ wpx : 200 }];
+                                if (cells != null) {
+                                    cells.s = {
+                                        fill: {
+                                          patternType: "solid",
+                                          fgColor: { rgb: "b3e7dc" }
+                                        }, 
+                                        font: { name: 'Arial', sz: 12},
+                                        alignment : { vertical : 'center', horizontal : 'center'}
+                                    };
                                 }
-                            };
+                            }
+
+                            for (let rowNum = range.s.r+1; rowNum <= range.e.r; rowNum++) {
+                                // Example: Get second cell in each row, i.e. Column "B"
+                                const cells = worksheet[XLSX.utils.encode_cell({r: rowNum, c: 0})];
+                                // NOTE: secondCell is undefined if it does not exist (i.e. if its empty)
+                                if (cells != null) {
+                                    cells.s = {
+                                        fill: {
+                                          patternType: "solid",
+                                          fgColor: { rgb: "eff67b" }
+                                        }, 
+                                        font: { name: 'Arial', sz: 12, bold: true},
+                                        alignment : { vertical : 'center', horizontal : 'center'}                                    };
+                                }
+                            }
+
+                            for (let rowNum = range.s.r+1; rowNum <= range.e.r; rowNum++) {
+                                for (let colNum = range.s.c+1; colNum <= range.e.r; colNum++) {
+                                    const cells = worksheet[XLSX.utils.encode_cell({r: rowNum, c: colNum})];
+                                    // NOTE: secondCell is undefined if it does not exist (i.e. if its empty)
+                                    if (cells != null) {
+                                        cells.s = {
+                                            fill: {
+                                            patternType: "solid",
+                                            fgColor: { rgb: "eeeeee" }
+                                            }, 
+                                            font: { name: 'Arial', sz: 12},
+                                            alignment : { vertical : 'center', horizontal : 'center'}                                        };
+                                    }
+                                }
+                            }
+
+                            for (let rowNum = range.s.r+1; rowNum <= range.e.r; rowNum++) {
+                                // Example: Get second cell in each row, i.e. Column "B"
+                                const cells = worksheet[XLSX.utils.encode_cell({r: rowNum, c: range.e.c})];
+                                // NOTE: secondCell is undefined if it does not exist (i.e. if its empty)
+                                if (cells != null) {
+                                    if (parseInt(cells.v) == 0) {
+                                        cells.s = {
+                                            fill: {
+                                              patternType: "solid",
+                                              fgColor: { rgb: "ffa6a6" }
+                                            },
+                                            font: { name: 'Arial', sz: 12},
+                                            alignment : { vertical : 'center', horizontal : 'center'}                                        };
+                                    }else{
+                                        cells.s = {
+                                            fill: {
+                                              patternType: "solid",
+                                              fgColor: { rgb: "d4ea6b" }
+                                            }, 
+                                            font: { name: 'Arial', sz: 12},
+                                            alignment : { vertical : 'center', horizontal : 'center'}                                        };
+                                    }
+                                }
+                            }
 
                             window.console.log(workbook.Sheets[response[0]['name']]);
                             var xlsbin = window.XLSX.write(workbook, {
