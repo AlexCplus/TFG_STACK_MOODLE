@@ -127,7 +127,7 @@ define(['jquery', 'jqueryui', 'block_stack/main'], function () {
                             ul.appendChild(item);
                             item.innerHTML = item.innerHTML+element["name"];
                         });
-                        const nav = document.querySelector('[role="main"]').appendChild(ul);
+                        const nav = document.querySelector('.div-dropdown-items').appendChild(ul);
                         var children = document.querySelectorAll("#students-list li");
                         for (let i = 0; i < children.length; i++) {
                             children[i].addEventListener("click", function(evt){
@@ -215,7 +215,7 @@ define(['jquery', 'jqueryui', 'block_stack/main'], function () {
                         user_row.setAttribute('class', 'user');
                         user_row.style.backgroundColor = 'hwb(180deg 94% 2%)';
                         user_row.style.margin = 'inherit';
-                        user_row.style.height = '300px';
+                        user_row.style.height = '500px';
                         const canvas = document.createElement('canvas');
                         user_row.appendChild(canvas);
 
@@ -241,10 +241,22 @@ define(['jquery', 'jqueryui', 'block_stack/main'], function () {
                                         borderColor: 'rgb(75, 192, 192)',
                                         tension: 0.1
                                     }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    scales: {
+                                        yAxes: [{
+                                            ticks: {
+                                                beginAtZero:true
+                                            }
+                                        }]
+                                    }
                                 }
                             });
                         });
 
+                        document.getElementsByTagName('canvas')[0].style.height = '500px';
                         const row = document.createElement('div');
                         row.setAttribute('class', 'row');
                         row.style.backgroundColor = 'beige';

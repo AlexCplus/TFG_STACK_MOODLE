@@ -53,14 +53,15 @@ $output .= html_writer::end_div();
 
 $output .= html_writer::start_tag('nav', array("class" => "navbar navbar-light bg-light"));
 $output .= html_writer::start_tag('form', array("class" => "form-inline", "method" => "POST"));
-$output .= html_writer::start_div('dropdown');
-$output .= html_writer::end_div();
 
 $output .= html_writer::tag('input', '', array("class" => "form-control mr-sm-2", "type", "placeholder" => "Búsqueda", "aria-label" => "Search", "id" => "search-student", "name" => "student"));
 $output .= html_writer::tag('button', 'Enviar', array("class" => "btn btn-primary", "type" => "submit"));
 
 $output .= html_writer::end_tag('form');
 $output .= html_writer::end_tag('nav');
+
+$output .= html_writer::start_div('div-dropdown-items');
+$output .= html_writer::end_div();
 
 echo $output;
 
